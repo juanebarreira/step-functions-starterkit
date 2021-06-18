@@ -1,0 +1,102 @@
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: create-step-functions
+  title: Create Step Functions on AWS
+  description: Create a new step function project
+  tags:
+    - step-functions
+    - javascript
+    - aws
+    - serverless
+spec:
+  owner: santagostino
+  type: service
+  parameters:
+    - title: Project
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the project
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this service is for
+          ui:options:
+            rows: 10
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the project
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+        system:
+          title: System
+          type: string
+          description: Help others understand which is the context of this service inside of your system
+          ui:options:
+            rows: 10
+    - title: Project specifics
+      properties:
+        xray:
+          title: Enable Xray tracing
+          type: boolean
+          default: false
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      input:
+        url: /
+        values:
+          name: "{{ parameters.name }}"
+          description: "{{ parameters.description }}"
+          owner: "{{ parameters.owner }}"
+          system: "{{ parameters.system }}"
+          xray: "{{ parameters.xray }}"
+          destination: "{{ parseRepoUrl parameters.repoUrl }}"
+        copyWithoutRender: ["template.yaml", "src", "test", "entrypoint.sh", "Makefile", "jest.config.js"]
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ["github.com"]
+        description: "This is {{ parameters.name }}"
+        repoUrl: "{{ parameters.repoUrl }}"
+
+    - id: branch
+      name: Create branch
+      action: github:create-branch
+      input:
+        repoUrl: "{{ parameters.repoUrl }}"
+        branchName: 'stage'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: "{{ steps.publish.output.repoContentsUrl }}"
+        catalogInfoPath: "/catalog-info.yaml"

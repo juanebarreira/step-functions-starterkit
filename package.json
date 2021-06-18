@@ -1,0 +1,37 @@
+{
+  "name": "{{cookiecutter.name | slugify}}",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "description": "Serverless dependencies for step functions deployment",
+  "dependencies": {
+    "aws-sdk": "^2.926.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.2",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.0.4",
+    "prettier": "^2.3.0",
+    "serverless": "^2.43.1",
+    "serverless-offline": "^7.0.0",
+    "serverless-offline-lambda": "^1.0.6",
+    "serverless-step-functions": "^2.30.0",
+    "serverless-step-functions-local": "^0.1.6"
+  },
+  "scripts": {
+    "test": "jest --verbose --runInBand",
+    "test-coverage": "jest --coverage=true",
+    "test-update-snap": "jest --updateSnapshot",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "offline": "node ./node_modules/serverless/bin/serverless offline start --noPrependStageInUrl",
+    "deploy": "node ./node_modules/serverless/bin/serverless deploy --stage ${1}",
+    "delete": "node ./node_modules/serverless/bin/serverless remove --stage ${1}",
+    "local": "node ./node_modules/serverless/bin/serverless invoke local --function invoke"
+  },
+  "author": "Santagostino"
+}

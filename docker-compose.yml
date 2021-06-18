@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    image: {{cookiecutter.name | slugify}}:loc
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - SLS_DEBUG=*
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+    extra_hosts:
+      - '{{cookiecutter.name | slugify}}:0.0.0.0'
+    ports:
+      - 3000:3000
+      - 8083:8083
+    labels:
+      com.dnsdock.alias: {{cookiecutter.name | slugify}}.loc

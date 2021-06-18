@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: {{cookiecutter.name | slugify}}
+  description: {{cookiecutter.description | jsonify}}
+  annotations:
+    github.com/project-slug: {{cookiecutter.destination.owner + "/" + cookiecutter.destination.repo | slugify}}
+    backstage.io/techdocs-ref: url:https://github.com/{{cookiecutter.destination.owner}}/{{cookiecutter.destination.repo}}
+  tags:
+    - step-functions
+    - javascript
+    - aws
+    - serverless
+spec:
+  type: service
+  lifecycle: experimental
+  owner: {{cookiecutter.owner | jsonify}}
+  system: {{cookiecutter.system}}

@@ -1,0 +1,84 @@
+service: {{cookiecutter.name | slugify}}
+frameworkVersion: '2'
+useDotenv: true
+plugins:
+  - serverless-step-functions
+  - serverless-step-functions-local
+  - serverless-offline-lambda
+  - serverless-offline
+
+package:
+  patterns:
+    - '!node_modules/**'
+
+provider:
+  name: aws
+  region: ${env:AWS_DEFAULT_REGION}
+  stage: ${opt:stage, 'local'}
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+
+functions:
+  randomIntInMsgTask:
+    handler: src/handler.randomIntInMsgTask
+  isGreater:
+    handler: src/handler.isGreater
+  isLower:
+    handler: src/handler.isLower
+
+stepFunctions:
+  stateMachines:
+    testStateMachine:
+      {% if cookiecutter.xray == 'true' -%}
+      tracingConfig:
+        enabled: true
+      {% endif %}
+      events:
+        - http:
+            path: test
+            method: GET
+      definition:
+        Comment: "An example of a state machine"
+        StartAt: FirstState
+        States:
+          FirstState:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [randomIntInMsgTask, Arn]
+            Next: DecideFlow
+          DecideFlow:
+            Type: Choice
+            Choices:
+            - Variable: $.number
+              NumericGreaterThanEquals: 0.5
+              Next: IsGreater
+            - Variable: $.number
+              NumericLessThan: 0.5
+              Next: IsLower
+            Default: 'Fail'
+          IsGreater:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [ isGreater, Arn ]
+            End: true
+          IsLower:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [ isLower, Arn ]
+            End: true
+          Fail:
+            Type: Fail
+  validate: true
+
+custom:
+  stepFunctionsLocal:
+    accountId: 134256517791
+    region: ${self:provider.region}
+    lambdaEndpoint: http://app:3002
+    TaskResourceMapping:
+      FirstState: arn:aws:lambda:${self:provider.region}:134256517791:function:{{cookiecutter.name | slugify}}-randomIntInMsgTask
+      IsGreater: arn:aws:lambda:${self:provider.region}:134256517791:function:{{cookiecutter.name | slugify}}-isGreater
+      IsLower: arn:aws:lambda:${self:provider.region}:134256517791:function:{{cookiecutter.name | slugify}}-isLower
+
+  serverless-offline:
+    host: 0.0.0.0
