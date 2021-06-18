@@ -13,7 +13,6 @@ services:
     extra_hosts:
       - '{{cookiecutter.name | slugify}}:0.0.0.0'
     ports:
-      - 3000:3000
       - 8083:8083
     labels:
       com.dnsdock.alias: {{cookiecutter.name | slugify}}.loc

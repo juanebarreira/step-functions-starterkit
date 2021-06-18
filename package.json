@@ -31,7 +31,7 @@
     "offline": "node ./node_modules/serverless/bin/serverless offline start --noPrependStageInUrl",
     "deploy": "node ./node_modules/serverless/bin/serverless deploy --stage ${1}",
     "delete": "node ./node_modules/serverless/bin/serverless remove --stage ${1}",
-    "local": "node ./node_modules/serverless/bin/serverless invoke local --function invoke"
+    "local": "node ./node_modules/serverless/bin/serverless invoke local --function local-invoke --stage local"
   },
   "author": "Santagostino"
 }

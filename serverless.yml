@@ -19,6 +19,8 @@ provider:
   lambdaHashingVersion: 20201221
 
 functions:
+  local-invoke:
+    handler: src/local.invokeStateMachine
   randomIntInMsgTask:
     handler: src/handler.randomIntInMsgTask
   isGreater:
@@ -73,12 +75,12 @@ stepFunctions:
 custom:
   stepFunctionsLocal:
     accountId: 134256517791
-    region: ${self:provider.region}
+    region: eu-west-1
     lambdaEndpoint: http://app:3002
     TaskResourceMapping:
-      FirstState: arn:aws:lambda:${self:provider.region}:134256517791:function:{{cookiecutter.name | slugify}}-randomIntInMsgTask
-      IsGreater: arn:aws:lambda:${self:provider.region}:134256517791:function:{{cookiecutter.name | slugify}}-isGreater
-      IsLower: arn:aws:lambda:${self:provider.region}:134256517791:function:{{cookiecutter.name | slugify}}-isLower
+      FirstState: arn:aws:lambda:eu-west-1:134256517791:function:{{cookiecutter.name | slugify}}-local-randomIntInMsgTask
+      IsGreater: arn:aws:lambda:eu-west-1:134256517791:function:{{cookiecutter.name | slugify}}-local-isGreater
+      IsLower: arn:aws:lambda:eu-west-1:134256517791:function:{{cookiecutter.name | slugify}}-local-isLower
 
   serverless-offline:
     host: 0.0.0.0

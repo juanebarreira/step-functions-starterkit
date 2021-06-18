@@ -21,6 +21,12 @@ There are 3 functions inside this handler to achieve the basic logic of the stat
 By default, a REST Api will be deployed in order to invoke the step function workflow but this can be modified to be triggered by other services. 
 For more information see the [Serverless Step Functions](https://www.serverless.com/plugins/serverless-step-functions) documentation
 
+# Running locally
+In order to run a state machine locally, the command `make local` will trigger inside the container a call to a lambda function
+(implemented in the `local.js` file) instantiating a step functions client (on port 8083) and starting the execution of the first state machine found
+by the command `listStateMachines`. This means that running locally supports only one state machine on the serverless configuration. To admit more than one, the local implementation can be 
+extended.
+
 # Deployment - CI/CD
 This starterkit comes with an already configure pipeline to run on Github Actions.
 The pipeline involves 3 workflows: `QA`, `stage` and `prod`.
